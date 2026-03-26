@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../app.dart';
 import '../../core/constants/app_colors.dart';
-import '../../core/constants/categories.dart';
 import '../../core/utils/date_utils.dart';
-import '../../data/models/transaction.dart';
 import '../../providers/filter_provider.dart';
 import '../../providers/transaction_provider.dart';
+import '../history/widgets/transaction_tile.dart';
+import '../input/input_screen.dart';
 import 'widgets/summary_card.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -68,7 +69,26 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                ...monthly.take(5).map((t) => _SimpleTile(t: t)),
+                ...monthly.take(5).map((t) => TransactionTile(
+                  transaction: t,
+                  onDelete: () =>
+                      ref.read(transactionProvider.notifier).delete(t.id),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => InputScreen(editTarget: t),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                )),
+                if (monthly.length > 5)
+                  TextButton(
+                    onPressed: () =>
+                        ref.read(currentTabProvider.notifier).state = 1,
+                    child: Text(
+                      '${monthly.length - 5}件 もっと見る →',
+                      style: const TextStyle(color: AppColors.primary),
+                    ),
+                  ),
               ],
             ],
           );
@@ -106,36 +126,6 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SimpleTile extends StatelessWidget {
-  final Transaction t;
-  const _SimpleTile({required this.t});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: t.isIncome
-            ? AppColors.incomeLight
-            : AppColors.expenseLight,
-        child: Text(
-          AppCategories.emojiFor(t.category),
-          style: const TextStyle(fontSize: 18),
-        ),
-      ),
-      title: Text(t.category),
-      subtitle: t.note.isNotEmpty ? Text(t.note) : null,
-      trailing: Text(
-        '${t.isIncome ? '+' : '-'}¥${AppDateUtils.formatAmount(t.amount)}',
-        style: TextStyle(
-          color: t.isIncome ? AppColors.income : AppColors.expense,
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-        ),
       ),
     );
   }
