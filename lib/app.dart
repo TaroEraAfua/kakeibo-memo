@@ -4,6 +4,7 @@ import 'core/constants/app_colors.dart';
 import 'ui/home/home_screen.dart';
 import 'ui/history/history_screen.dart';
 import 'ui/chart/chart_screen.dart';
+import 'ui/input/input_screen.dart';
 
 final currentTabProvider = StateProvider<int>((ref) => 0);
 
@@ -99,20 +100,10 @@ class MainShell extends ConsumerWidget {
 
   void _openInput(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const InputScreenPlaceholder()),
-    );
-  }
-}
-
-// Phase 1 プレースホルダー（Day 3 で実装）
-class InputScreenPlaceholder extends StatelessWidget {
-  const InputScreenPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('収支を入力')),
-      body: const Center(child: Text('Day 3 で実装します')),
+      MaterialPageRoute(
+        builder: (_) => const InputScreen(),
+        fullscreenDialog: true,
+      ),
     );
   }
 }
